@@ -1,3 +1,4 @@
+// # PROSPECTO A SER ELIMINADO #
 package view.console;
 
 import java.util.ArrayList;
