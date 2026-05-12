@@ -23,7 +23,7 @@ public abstract class Warrior {
      * Inicializa atributos básicos del guerrero.
      */
     public Warrior(String name, double lifePoints, double attack, double defence, String weapon) {
-
+        // Validamos nombres disponibles.
         if (USED_NAMES.contains(name)) {
             throw new IllegalArgumentException("Nombre ya usado: " + name);
         }
@@ -75,10 +75,12 @@ public abstract class Warrior {
         this.warriorType = type;
     }
 
-    /**
+
+    /** 
      * Aplica bonificación según tipo.
      * Usa valores numéricos que no son autoexplicativos.
      */
+    // ## VALIDAR PARA ESTABILIZAR COMBATE ##
     protected void setSpecial(int special) {
         switch (special) {
             case 1 -> this.attack *= 1.1;
@@ -131,24 +133,7 @@ public abstract class Warrior {
      */
     public abstract List<String> getArmsList();
 
-    /**
-     * Representación básica del guerrero.
-     * Puede mostrar null si warriorType no fue definido.
-     */
-    @Override
-    public String toString() {
-        return name + " (" + warriorType + ") - Vida: " + lifePoints;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Warrior))
-            return false;
-        Warrior w = (Warrior) o;
-        return name.equals(w.name);
-    }
-
+    
     public int hashCode() {
         return name.hashCode();
     }

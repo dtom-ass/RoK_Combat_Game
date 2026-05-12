@@ -9,7 +9,7 @@ public class Archer extends Warrior {
     public Archer(String name) {
         super(name, 55, 0.7, 0.5, WEAPONS.get(0));
         setWarriorType("Arquero");
-        setSpecial(1);
+        setSpecial(1); // ## VALIDAR PARA ESTABILIZAR COMBATE ##
     }
 
     @Override

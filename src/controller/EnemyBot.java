@@ -17,6 +17,8 @@ import model.Warriors.Healer;
 import model.Warriors.Lancer;
 import model.Warriors.Tank;
 
+import view.ConsoleLog;
+
 /**
  * Controla el comportamiento del bot enemigo.
  * Genera cultura, equipo y decisiones de combate.
@@ -53,8 +55,9 @@ public class EnemyBot {
      * Genera cultura aleatoria y equipo enemigo.
      */
     private void generateEnemyTeam() {
-
+        ConsoleLog.Log("Creando Equipo Enemigo...");
         setRandomCulture();
+        ConsoleLog.Log("Cultura elegida: " + getEnemyCulture().getName());
 
         List<String> names = enemyCulture.getWarriorNameList();
         List<Integer> indices = new ArrayList<>();
@@ -78,6 +81,7 @@ public class EnemyBot {
                             random.nextInt(warrior.getArmsList().size())));
 
             enemyCulture.addWarrior(warrior);
+            ConsoleLog.Log("Nuevo guerrero enemigo: " + warrior.getName() + " " + warrior.getWarriorType());
         }
     }
 
@@ -142,6 +146,7 @@ public class EnemyBot {
 
         activeWarriorIndex = next;
         enemyWarrior = team.get(next);
+        ConsoleLog.Log("Equipo enemigo: Cambia al guerrero: " + enemyWarrior.getName());
     }
 
     /**
@@ -167,6 +172,7 @@ public class EnemyBot {
             return false;
 
         enemyWarrior.updateLife(-damage);
+        ConsoleLog.Log("Enemigo " + enemyWarrior + " recibe " + damage + " puntos de daño.");
 
         if (enemyWarrior.getLife() <= 0) {
             removeDeadWarrior();
@@ -181,7 +187,7 @@ public class EnemyBot {
      */
     private void removeDeadWarrior() {
 
-        System.out.printf(" %s ha sido eliminado.%n", enemyWarrior.getName());
+        ConsoleLog.Log("El guerrero enemigo " + enemyWarrior.getName() + " fue ELIMINADO");
 
         // FIX: no modificar lista inmodificable directamente
         enemyCulture.removeWarrior(activeWarriorIndex);
@@ -191,6 +197,7 @@ public class EnemyBot {
         if (team.isEmpty()) {
             this.alive = false;
             this.enemyWarrior = null;
+            ConsoleLog.Log("EQUIPO ENEMIGO DERROTADO");
             return;
         }
 
