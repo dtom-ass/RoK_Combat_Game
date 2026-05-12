@@ -16,8 +16,7 @@ import model.Warriors.Fighter;
 import model.Warriors.Healer;
 import model.Warriors.Lancer;
 import model.Warriors.Tank;
-
-import view.ConsoleLog;
+import view.console.ConsoleLog;
 
 /**
  * Controla el comportamiento del bot enemigo.

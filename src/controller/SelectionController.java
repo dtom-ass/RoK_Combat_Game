@@ -17,8 +17,8 @@ import model.Warriors.Fighter;
 import model.Warriors.Healer;
 import model.Warriors.Lancer;
 import model.Warriors.Tank;
-import view.MainMenuView;
-import view.ConsoleLog;
+import view.console.ConsoleLog;
+import view.console.MainMenuView;
 
 /**
  * Controla selección de cultura

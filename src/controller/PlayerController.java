@@ -3,7 +3,7 @@ package controller;
 import java.util.List;
 import model.Culture;
 import model.Warrior;
-import view.ConsoleLog;
+import view.console.ConsoleLog;
 
 /**
  * Controla acciones del jugador durante la batalla.

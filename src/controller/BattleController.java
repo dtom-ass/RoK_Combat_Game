@@ -1,9 +1,9 @@
 package controller;
 
 import model.Warrior;
-import view.BattleInConsole;
-import view.ConsoleLog;
-import view.ConsoleView;
+import view.console.BattleInConsole;
+import view.console.ConsoleLog;
+import view.console.ConsoleView;
 
 /**
  * Controla el flujo de la batalla.

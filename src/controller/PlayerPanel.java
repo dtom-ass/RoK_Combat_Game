@@ -1,8 +1,8 @@
 package controller;
 
-import view.ConsoleLog;
 import controller.SelectionController;
 import model.Culture;
+import view.console.ConsoleLog;
 
 public class PlayerPanel {
     private PlayerController player;

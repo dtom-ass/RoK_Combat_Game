@@ -1,6 +1,9 @@
 package controller;
 
 import view.*;
+import view.console.ConsoleView;
+import view.console.MainMenuView;
+
 import java.util.Scanner;
 
 public class StartMenu {
