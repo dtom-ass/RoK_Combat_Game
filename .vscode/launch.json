@@ -6,7 +6,7 @@
             "name": "guitest",
             "request": "launch",
             "mainClass": "view.GUI.guitest",
-            "vmArgs": "--module-path \"C:/Users/Tomas Fuse/Documents/U/POO/RoK_Combat_Game/lib\" --add-modules javafx.controls,javafx.fxml -Djava.library.path=\"C:/Users/Tomas Fuse/Documents/U/POO/RoK_Combat_Game/lib\""
+            "vmArgs": "--module-path \"${workspaceFolder}/lib\" --add-modules javafx.controls,javafx.fxml -Djava.library.path=\"${workspaceFolder}/lib\""
         }
     ]
 }
