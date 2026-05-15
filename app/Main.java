@@ -1,8 +1,13 @@
+import controller.PlayerPanel;
+import controller.SelectionController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import view.scenes.WelcomeScene;
 
 public class Main extends Application {
+
+    PlayerPanel panel = new PlayerPanel();
+    SelectionController controller = new SelectionController(panel);
 
     @Override
     public void start(Stage stage) {
@@ -10,7 +15,7 @@ public class Main extends Application {
         stage.setTitle("RoK Combat Game");
 
         stage.setScene(
-            WelcomeScene.create(stage)
+            WelcomeScene.create(stage, panel, controller)
         );
 
         stage.show();

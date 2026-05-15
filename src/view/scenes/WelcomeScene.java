@@ -1,15 +1,17 @@
 package view.scenes;
 
+import controller.PlayerPanel;
+import controller.SelectionController;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import view.GUI.guitest;
+import view.scenes.*;
 import view.console.ConsoleLog;
 
 public class WelcomeScene {
 
-    public static Scene create(Stage stage) {
+    public static Scene create(Stage stage, PlayerPanel panel, SelectionController controller) {
         ConsoleLog.Log("INICIANDO ESCENA: WelcomeScene");
         Button startBtn = new Button("Iniciar");
 
@@ -19,7 +21,7 @@ public class WelcomeScene {
             // Hacemos pruebas con  guitest
             ConsoleLog.Log("CAMBIO DE ESCENA: GUI TEST");
             stage.setScene(
-                guitest.create(stage)
+                SelectionScene.create(stage, panel, controller)
             );
         });
         exitBtn.setOnAction(e -> {
