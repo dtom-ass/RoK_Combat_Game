@@ -124,7 +124,7 @@ public class SelectionController {
         };
     }
 
-    public static Culture getSelectedCulture() {
+    public Culture getSelectedCulture() {
         return selectedCulture;
     }
 }

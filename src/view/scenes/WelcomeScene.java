@@ -20,7 +20,7 @@ public class WelcomeScene {
 
         startBtn.setOnAction(e -> {
             // Hacemos pruebas con guitest
-            ConsoleLog.Log("CAMBIO DE ESCENA: GUI TEST");
+            ConsoleLog.Log("CAMBIO DE ESCENA: SelectionScene");
             stage.setScene(
                     SelectionScene.create(stage, panel, controller));
         });

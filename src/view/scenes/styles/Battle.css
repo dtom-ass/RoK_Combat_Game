@@ -50,9 +50,3 @@
     -fx-background-color: #1565c0;
     -fx-border-color: #64b5f6;
 }
-
-/* Botón temporal enemigo */
-#EnemyButtonAttack {
-    -fx-background-color: #5d4037;
-    -fx-border-color: #a1887f;
-}

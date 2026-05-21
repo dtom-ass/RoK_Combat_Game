@@ -58,6 +58,7 @@ public class BattleController {
                 ConsoleLog.Log("Cambia al turno del Enemigo");
             }
         }
+        getBattleStatus();
     }
 
     /**
@@ -86,6 +87,8 @@ public class BattleController {
 
         boolean killed = player.receiveAttack(finalDamage);
 
+        
+
         if (killed) {
             ConsoleLog.Log("Aliado " + targetName + " fue ELIMINADO");;
 
@@ -113,6 +116,14 @@ public class BattleController {
         return player.isAlive();
     }
 
+    public PlayerController getPlayer(){
+        return this.player;
+    }
+
+    public EnemyBot getEnemy(){
+        return this.enemy;
+    }
+
     public boolean isEnemyAlive() {
         return enemy.isAlive();
     }
@@ -124,14 +135,15 @@ public class BattleController {
     /**
      * Estado del combate.
      */
-    public void getBattleStatus() {
+    public Boolean getBattleStatus() {
         ConsoleLog.Log("ESTADO DEL COMBATE");
         Warrior pw = player.getActiveWarrior();
         Warrior ew = enemy.getEnemyWarrior();
 
         if (pw == null || ew == null) {
             ConsoleLog.Log("ESTADO DE LA BATALLA: FINALIZADA");
-            return;
+
+            return false;
         }
 
         String pData = String.format("%-12s | HP: %5.1f",
@@ -143,6 +155,7 @@ public class BattleController {
         
         ConsoleLog.Log("ALIADO: " + pData);
         ConsoleLog.Log("ENEMIGO: " + eData);
+        return true;
     }
 
     /**

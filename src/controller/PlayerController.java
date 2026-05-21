@@ -117,6 +117,9 @@ public class PlayerController {
     public Culture getPlayerCulture() {
         return playerCulture;
     }
+    public Culture getEnemyCulture() {
+        return playerCulture;
+    }
 
     public boolean isAlive() {
         return alive;

@@ -1,25 +1,35 @@
 package view.scenes;
 
-import java.lang.Thread.State;
-
-import controller.PlayerPanel;
-import controller.SelectionController;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class EndScene {
-    public static Scene create(State stage, PlayerPanel panel, SelectionController controller) {
 
-        VBox root = new VBox();
-        Scene scene = new Scene(root, 800, 600);
+    public static Scene create(
+            Stage stage,
+            boolean playerWon) {
 
-        String css = EndScene.class
-                .getResource("/view/scenes/styles/End.css")
-                .toExternalForm();
+        Label result = new Label(
+                playerWon
+                        ? "VICTORIA"
+                        : "DERROTA");
 
-        scene.getStylesheets().add(css);
+        Button close =
+                new Button("Cerrar");
 
-        return scene;
+        close.setOnAction(e -> {
+            stage.close();
+        });
+
+        VBox root =
+                new VBox(30, result, close);
+
+        root.setAlignment(Pos.CENTER);
+
+        return new Scene(root, 800, 600);
     }
-
 }
