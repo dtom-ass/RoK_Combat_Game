@@ -2,54 +2,119 @@ package view.scenes;
 
 import controller.PlayerPanel;
 import controller.SelectionController;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import view.console.ConsoleLog;
 
+/**
+ * Escena de bienvenida.
+ */
 public class WelcomeScene {
 
-    public static Scene create(Stage stage, PlayerPanel panel, SelectionController controller) {
-        ConsoleLog.Log("INICIANDO ESCENA: WelcomeScene");
-        Button startBtn = new Button("Iniciar");
+    /**
+     * Crea la pantalla principal.
+     */
+    public static Scene create(
+            Stage stage,
+            PlayerPanel panel,
+            SelectionController controller) {
 
-        Button exitBtn = new Button("Salir");
+        /*
+         * Título
+         */
 
-        startBtn.setOnAction(e -> {
-            // Hacemos pruebas con guitest
-            ConsoleLog.Log("CAMBIO DE ESCENA: SelectionScene");
+        Label title =
+                new Label(
+                        "RoK Combat Game");
+
+        title.getStyleClass()
+                .add("title-label");
+
+        /*
+         * Botón iniciar
+         */
+
+        Button startButton =
+                new Button(
+                        "Iniciar Juego");
+
+        startButton.setOnAction(e -> {
+
             stage.setScene(
-                    SelectionScene.create(stage, panel, controller));
+                    SelectionScene.create(
+                            stage,
+                            panel,
+                            controller));
         });
-        exitBtn.setOnAction(e -> {
+
+        /*
+         * Botón salir
+         */
+
+        Button exitButton =
+                new Button(
+                        "Salir");
+
+        exitButton.setOnAction(e -> {
+
             stage.close();
         });
 
-        startBtn.getStyleClass().add("welcomeButtons");
-        exitBtn.getStyleClass().add("welcomeButtons");
+        /*
+         * Panel botones
+         */
 
-        HBox ButtonsContainer = new HBox(startBtn, exitBtn);
-        ButtonsContainer.getStyleClass().add("ButtonsContainer");
+        VBox menuBox =
+                new VBox(
+                        20,
+                        title,
+                        startButton,
+                        exitButton);
 
-        Label title = new Label("RoK Combat Game");
-        title.getStyleClass().add("title-label");
+        menuBox.setAlignment(
+                Pos.CENTER);
 
-        VBox root = new VBox(
-                title,
-                ButtonsContainer);
-        root.getStyleClass().add("main-container");
+        /*
+         * Root
+         */
 
-        ConsoleLog.Log("- PANTALLA DE INICIO -");
-        Scene scene = new Scene(root, 800, 600);
+        StackPane root =
+                new StackPane(menuBox);
 
-        String css = WelcomeScene.class
-                .getResource("/view/styles/welcome.css")
-                .toExternalForm();
+        /*
+         * IMPORTANTE:
+         * Clase CSS del fondo
+         */
 
-        scene.getStylesheets().add(css);
+        root.getStyleClass()
+                .add("welcome-root");
+
+        /*
+         * Scene
+         */
+
+        Scene scene =
+                new Scene(
+                        root,
+                        800,
+                        600);
+
+        /*
+         * CSS
+         */
+
+        String css =
+                WelcomeScene.class
+                        .getResource(
+                                "/view/styles/Welcome.css")
+                        .toExternalForm();
+
+        scene.getStylesheets()
+                .add(css);
 
         return scene;
     }

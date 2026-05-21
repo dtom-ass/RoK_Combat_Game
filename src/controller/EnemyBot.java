@@ -19,114 +19,185 @@ import model.Warriors.Tank;
 import view.console.ConsoleLog;
 
 /**
- * Controla el comportamiento del bot enemigo.
- * Genera cultura, equipo y decisiones de combate.
+ * Controla el comportamiento del equipo enemigo.
+ * 
+ * Administra:
+ * - generación del equipo
+ * - IA básica
+ * - ataques
+ * - cambios de guerrero
+ * - estado del enemigo
  */
 public class EnemyBot {
 
-    private static final double SPECIAL_MULTIPLIER = 1.5;
+    // Generador aleatorio
+    private final Random random;
 
+    // Cultura enemiga
     private Culture enemyCulture;
-    private Warrior enemyWarrior;
-    private int activeWarriorIndex;
-    private boolean alive;
 
-    private final Random random = new Random();
+    // Guerrero enemigo activo
+    private Warrior activeWarrior;
+
+    // Índice del guerrero activo
+    private int activeWarriorIndex;
+
+    // Estado del equipo enemigo
+    private boolean alive;
 
     /**
      * Inicializa el bot enemigo.
      */
     public EnemyBot() {
 
-        alive = true;
-        activeWarriorIndex = 0;
+        this.random = new Random();
 
         generateEnemyTeam();
 
-        // Validación para evitar acceso inválido
-        List<Warrior> team = enemyCulture.getWarriorList();
-        if (!team.isEmpty()) {
-            enemyWarrior = team.get(0);
-        }
+        initializeTeam();
     }
 
     /**
-     * Genera cultura aleatoria y equipo enemigo.
+     * Inicializa el primer guerrero enemigo.
+     */
+    private void initializeTeam() {
+
+        List<Warrior> team = enemyCulture.getWarriorList();
+
+        if (team.isEmpty()) {
+
+            alive = false;
+            activeWarrior = null;
+            activeWarriorIndex = -1;
+
+            return;
+        }
+
+        alive = true;
+        activeWarriorIndex = 0;
+        activeWarrior = team.get(0);
+
+        ConsoleLog.Log(
+                "Enemigo inicia con: "
+                        + activeWarrior.getName());
+    }
+
+    /**
+     * Genera la cultura y el equipo enemigo.
      */
     private void generateEnemyTeam() {
-        ConsoleLog.Log("Creando Equipo Enemigo...");
+
+        ConsoleLog.Log(
+                "Generando equipo enemigo...");
+
         setRandomCulture();
-        ConsoleLog.Log("Cultura Enemiga: " + getEnemyCulture().getName());
+
+        ConsoleLog.Log(
+                "Cultura enemiga: "
+                        + enemyCulture.getName());
 
         List<String> names = enemyCulture.getWarriorNameList();
+
         List<Integer> indices = new ArrayList<>();
 
-        // Genera lista de índices para evitar repetir nombres
+        // Genera índices únicos
         for (int i = 0; i < names.size(); i++) {
             indices.add(i);
         }
 
         Collections.shuffle(indices);
 
-        // Limita a máximo 3 o al tamaño disponible
+        // Genera máximo 3 guerreros
         for (int i = 0; i < Math.min(3, names.size()); i++) {
 
             String name = names.get(indices.get(i));
+
             Warrior warrior = createRandomWarrior(name);
 
-            // Asigna arma aleatoria del guerrero
-            warrior.setWeapon(
-                    warrior.getArmsList().get(
-                            random.nextInt(warrior.getArmsList().size())));
+            assignRandomWeapon(warrior);
 
             enemyCulture.addWarrior(warrior);
-            ConsoleLog.Log("Nuevo guerrero enemigo: " + warrior.getName() + " " + warrior.getWarriorType());
+
+            ConsoleLog.Log(
+                    "Nuevo enemigo: "
+                            + warrior.getName()
+                            + " ["
+                            + warrior.getWarriorType()
+                            + "]");
         }
     }
 
     /**
-     * Asigna una cultura aleatoria.
+     * Asigna un arma aleatoria al guerrero.
+     */
+    private void assignRandomWeapon(Warrior warrior) {
+
+        List<String> weapons = warrior.getArmsList();
+
+        warrior.setWeapon(
+                weapons.get(
+                        random.nextInt(weapons.size())));
+    }
+
+    /**
+     * Selecciona una cultura aleatoria.
      */
     private void setRandomCulture() {
+
         switch (random.nextInt(4)) {
-            case 0 -> this.enemyCulture = new AztecaCulture();
-            case 1 -> this.enemyCulture = new IncaCulture();
-            case 2 -> this.enemyCulture = new MayaCulture();
-            case 3 -> this.enemyCulture = new MuiscaCulture();
+
+            case 0 -> enemyCulture = new AztecaCulture();
+
+            case 1 -> enemyCulture = new IncaCulture();
+
+            case 2 -> enemyCulture = new MayaCulture();
+
+            default -> enemyCulture = new MuiscaCulture();
         }
     }
 
     /**
-     * Crea un guerrero aleatorio.
+     * Genera un guerrero aleatorio.
      */
     private Warrior createRandomWarrior(String name) {
+
         return switch (random.nextInt(5)) {
+
             case 0 -> new Archer(name);
+
             case 1 -> new Fighter(name);
+
             case 2 -> new Healer(name);
+
             case 3 -> new Lancer(name);
+
             default -> new Tank(name);
         };
     }
 
     /**
-     * Ejecuta turno del bot.
+     * Ejecuta el turno enemigo.
+     * 
+     * Puede:
+     * - cambiar guerrero
+     * - usar ataque básico
+     * - usar ataque especial
      */
     public double playTurn() {
 
-        // Puede cambiar de guerrero
+        // Posible cambio de guerrero
         if (random.nextBoolean()) {
             switchWarrior();
         }
 
-        // Decide tipo de ataque
+        // Selección de ataque
         return random.nextBoolean()
                 ? basicAttack()
                 : specialAttack();
     }
 
     /**
-     * Cambia el guerrero activo aleatoriamente.
+     * Cambia el guerrero enemigo activo.
      */
     private void switchWarrior() {
 
@@ -136,102 +207,161 @@ public class EnemyBot {
             return;
         }
 
-        int next;
+        int nextIndex;
 
-        // Evita seleccionar el mismo guerrero
+        // Evita repetir el mismo guerrero
         do {
-            next = random.nextInt(team.size());
-        } while (next == activeWarriorIndex);
 
-        activeWarriorIndex = next;
-        enemyWarrior = team.get(next);
-        ConsoleLog.Log("Equipo enemigo: Cambia al guerrero: " + enemyWarrior.getName());
+            nextIndex = random.nextInt(team.size());
+
+        } while (nextIndex == activeWarriorIndex);
+
+        activeWarriorIndex = nextIndex;
+        activeWarrior = team.get(nextIndex);
+
+        ConsoleLog.Log(
+                "El enemigo cambia a: "
+                        + activeWarrior.getName());
     }
 
     /**
-     * Ataque básico.
+     * Ejecuta ataque básico.
+     * 
+     * Daño:
+     * 2 a 5
      */
     public double basicAttack() {
-        ConsoleLog.Log("Realizando ataque Basico...");
-        return 2 + random.nextInt(4);
+
+        double damage = 2 + random.nextInt(4);
+
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " realiza ataque básico.");
+
+        return damage;
     }
 
     /**
-     * Ataque especial.
+     * Ejecuta ataque especial.
+     * 
+     * 35% probabilidad:
+     * daño crítico entre 5 y 10
+     * 
+     * Si falla:
+     * ataque básico.
      */
     public double specialAttack() {
 
-    /*
-     * 35% probabilidad crítico
-     */
-    if (random.nextDouble() <= 0.35) {
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " intenta ataque especial.");
 
-        return 5 + random.nextInt(6);
+        // Crítico exitoso
+        if (random.nextDouble() <= 0.35) {
+
+            double criticalDamage = 5 + random.nextInt(6);
+
+            ConsoleLog.Log(
+                    "¡Ataque crítico enemigo!");
+
+            return criticalDamage;
+        }
+
+        ConsoleLog.Log(
+                "Ataque especial enemigo fallido.");
+
+        return basicAttack();
     }
 
-    /*
-     * Si falla:
-     * daño básico
-     */
-    return basicAttack();
-}
-
     /**
-     * Aplica daño recibido.
+     * Aplica daño al guerrero enemigo activo.
+     * 
+     * @return true si el guerrero murió
      */
     public boolean receiveAttack(double damage) {
 
-        if (enemyWarrior == null)
+        if (activeWarrior == null) {
             return false;
+        }
 
-        enemyWarrior.updateLife(-damage);
-        ConsoleLog.Log("Enemigo " + enemyWarrior.getName() + " recibe " + damage + " puntos de daño.");
+        activeWarrior.updateHealth(-damage);
 
-        if (enemyWarrior.getLife() <= 0) {
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " recibe "
+                        + damage
+                        + " puntos de daño.");
+
+        if (activeWarrior.getHealth() <= 0) {
+
             removeDeadWarrior();
-            return true; // murió
+
+            return true;
         }
 
         return false;
     }
 
     /**
-     * Elimina guerrero muerto y actualiza estado.
+     * Elimina un guerrero derrotado.
      */
     private void removeDeadWarrior() {
 
-        ConsoleLog.Log("El guerrero enemigo " + enemyWarrior.getName() + " fue ELIMINADO");
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " ha sido eliminado.");
 
-        // FIX: no modificar lista inmodificable directamente
         enemyCulture.removeWarrior(activeWarriorIndex);
 
         List<Warrior> team = enemyCulture.getWarriorList();
 
+        // Equipo derrotado
         if (team.isEmpty()) {
-            this.alive = false;
-            this.enemyWarrior = null;
-            ConsoleLog.Log("EQUIPO ENEMIGO DERROTADO");
+
+            alive = false;
+            activeWarrior = null;
+            activeWarriorIndex = -1;
+
+            ConsoleLog.Log(
+                    "El equipo enemigo fue derrotado.");
+
             return;
         }
 
-        // Selecciona nuevo guerrero activo
-        this.activeWarriorIndex = 0;
-        this.enemyWarrior = team.get(0);
+        // Nuevo guerrero activo
+        activeWarriorIndex = 0;
+        activeWarrior = team.get(0);
+
+        ConsoleLog.Log(
+                "Nuevo enemigo activo: "
+                        + activeWarrior.getName());
     }
 
+    /**
+     * Retorna la cultura enemiga.
+     */
     public Culture getEnemyCulture() {
         return enemyCulture;
     }
 
+    /**
+     * Retorna el guerrero enemigo activo.
+     */
     public Warrior getEnemyWarrior() {
-        return enemyWarrior;
+        return activeWarrior;
     }
 
+    /**
+     * Retorna el equipo enemigo completo.
+     */
+    public List<Warrior> getEnemyTeam() {
+        return enemyCulture.getWarriorList();
+    }
+
+    /**
+     * Indica si el enemigo sigue vivo.
+     */
     public boolean isAlive() {
         return alive;
-    }
-
-    public List<String> getWarriorNameList() {
-        return enemyCulture.getWarriorNameList();
     }
 }

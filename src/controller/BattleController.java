@@ -4,195 +4,352 @@ import model.Warrior;
 import view.console.ConsoleLog;
 
 /**
- * Controla el flujo de la batalla.
+ * Controla el flujo principal de la batalla.
+ * 
+ * Administra:
+ * - turnos
+ * - daño
+ * - estado del combate
+ * - resultado final
  */
 public class BattleController {
 
+    // Tipo de ataque especial
     private static final int SPECIAL_ATTACK = 2;
 
+    // Controladores principales
     private final PlayerController player;
     private final EnemyBot enemy;
 
-    public BattleController(PlayerController player, EnemyBot enemy) {
+    /**
+     * Inicializa la batalla.
+     */
+    public BattleController(
+            PlayerController player,
+            EnemyBot enemy) {
+
         this.player = player;
         this.enemy = enemy;
-        ConsoleLog.Log("Creando controlador de batalla...");
-        ConsoleLog.Log("Se Crea al Jugador: "+ player.getActiveWarrior().getName() + " EQUIPO" + player.getWarriorTeam());
-        ConsoleLog.Log("Se Crea al Enemigo: "+ enemy);
+
+        ConsoleLog.Log(
+                "=== INICIANDO BATALLA ===");
+
+        ConsoleLog.Log(
+                "Jugador inicia con: "
+                        + player.getActiveWarrior().getName());
+
+        ConsoleLog.Log(
+                "Enemigo inicia con: "
+                        + enemy.getEnemyWarrior().getName());
     }
 
     /**
-     * Turno del jugador.
+     * Ejecuta el turno del jugador.
      */
-    public void playerTurn(int selectedWarriorIndex, int attackType) {
-        ConsoleLog.Log("TURNO DEL JUGADOR");
-        if (player.getActiveWarrior() == null || enemy.getEnemyWarrior() == null) {
-            ConsoleLog.Log("COMBATE NO VALIDO");
+    public void playerTurn(
+            int selectedWarriorIndex,
+            int attackType) {
+
+        ConsoleLog.Log(
+                "===== TURNO DEL JUGADOR =====");
+
+        // Validación de combate
+        if (!isCombatValid()) {
+            return;
         }
 
+        // Cambio de guerrero
         if (selectedWarriorIndex >= 0) {
-            player.switchWarrior(selectedWarriorIndex);
+
+            player.switchWarrior(
+                    selectedWarriorIndex);
         }
 
-        Warrior attacker = player.getActiveWarrior();
-        Warrior target = enemy.getEnemyWarrior();
+        Warrior attacker =
+                player.getActiveWarrior();
 
-        String targetName = target.getName();
+        Warrior target =
+                enemy.getEnemyWarrior();
 
-        ConsoleLog.Log("Guerrero aliado " + attacker.getName() + " ataca a " + targetName);
+        String attackerName =
+                attacker.getName();
 
-        double rawDamage = (attackType == 2)
-                ? player.specialAttack()
-                : player.basicAttack();
+        String targetName =
+                target.getName();
 
-        double finalDamage = calculateDamage(rawDamage, target.getDefence());
-        ConsoleLog.Log("Calculando daño realizado...");
-        ConsoleLog.Log("El enemigo " + targetName + " Recibe un daño de " + finalDamage + " puntos.");
+        ConsoleLog.Log(
+                attackerName
+                        + " ataca a "
+                        + targetName);
 
-        boolean killed = enemy.receiveAttack(finalDamage);
+        ConsoleLog.Log(
+                "Arma equipada: "
+                        + attacker.getWeapon());
 
+        // Selección de ataque
+        double rawDamage =
+                (attackType == SPECIAL_ATTACK)
+                        ? player.specialAttack()
+                        : player.basicAttack();
+
+        // Cálculo final
+        double finalDamage =
+                calculateDamage(
+                        rawDamage,
+                        target.getDefence());
+
+        ConsoleLog.Log(
+                targetName
+                        + " recibe "
+                        + finalDamage
+                        + " puntos de daño.");
+
+        // Aplicar daño
+        boolean killed =
+                enemy.receiveAttack(finalDamage);
+
+        // Validar eliminación
         if (killed) {
-            ConsoleLog.Log("Enemigo " + targetName + " fue ELIMINADO");;
+
+            ConsoleLog.Log(
+                    targetName
+                            + " fue eliminado.");
 
             if (enemy.getEnemyWarrior() != null) {
-                ConsoleLog.Log("Cambia al turno del Enemigo");
+
+                ConsoleLog.Log(
+                        "Nuevo enemigo activo: "
+                                + enemy.getEnemyWarrior().getName());
             }
         }
+
         getBattleStatus();
     }
 
     /**
-     * Turno del enemigo.
+     * Ejecuta el turno del enemigo.
      */
     public void enemyTurn() {
-        ConsoleLog.Log("TURNO DEL ENEMIGO");
 
-        if (player.getActiveWarrior() == null || enemy.getEnemyWarrior() == null) {
-            ConsoleLog.Log("COMBATE NO VALIDO");
+        ConsoleLog.Log(
+                "===== TURNO DEL ENEMIGO =====");
+
+        // Validación de combate
+        if (!isCombatValid()) {
+            return;
         }
 
-        Warrior attacker = enemy.getEnemyWarrior();
-        Warrior target = player.getActiveWarrior();
+        Warrior attacker =
+                enemy.getEnemyWarrior();
 
-        String targetName = target.getName(); // guardar antes
+        Warrior target =
+                player.getActiveWarrior();
 
-        ConsoleLog.Log("Guerrero Enemigo " + attacker.getName() + " ataca al aliado " + targetName);
+        String attackerName =
+                attacker.getName();
 
-        double rawDamage = enemy.playTurn();
-        double finalDamage = calculateDamage(rawDamage, target.getDefence());
+        String targetName =
+                target.getName();
 
-        
-        ConsoleLog.Log("Calculando daño realizado...");
-        ConsoleLog.Log("El aliado " + targetName + " recibe un daño de " + finalDamage + " puntos por parte del enemigo.");
+        ConsoleLog.Log(
+                attackerName
+                        + " ataca a "
+                        + targetName);
 
-        boolean killed = player.receiveAttack(finalDamage);
+        ConsoleLog.Log(
+                "Arma equipada: "
+                        + attacker.getWeapon());
 
-        
+        // Ataque enemigo
+        double rawDamage =
+                enemy.playTurn();
 
+        // Cálculo final
+        double finalDamage =
+                calculateDamage(
+                        rawDamage,
+                        target.getDefence());
+
+        ConsoleLog.Log(
+                targetName
+                        + " recibe "
+                        + finalDamage
+                        + " puntos de daño.");
+
+        // Aplicar daño
+        boolean killed =
+                player.receiveAttack(finalDamage);
+
+        // Validar eliminación
         if (killed) {
-            ConsoleLog.Log("Aliado " + targetName + " fue ELIMINADO");;
 
-            // Mostrar nuevo guerrero activo automáticamente
+            ConsoleLog.Log(
+                    targetName
+                            + " fue eliminado.");
+
             if (player.getActiveWarrior() != null) {
-                ConsoleLog.Log("Cambia al turno del Jugador");
+
+                ConsoleLog.Log(
+                        "Nuevo aliado activo: "
+                                + player.getActiveWarrior().getName());
             }
         }
+
+        getBattleStatus();
     }
 
     /**
-     * Cálculo de daño.
+     * Verifica si el combate sigue siendo válido.
      */
-    /**
- * Calcula el daño final considerando defensa.
- * Usa reducción progresiva para evitar defensas rotas.
- */
-/**
- * Calcula daño final aplicando defensa plana.
- */
-private double calculateDamage(
-        double rawDamage,
-        double defence) {
+    private boolean isCombatValid() {
 
-    ConsoleLog.Log(
-            "ATK: "
-                    + rawDamage
-                    + " DEF: "
-                    + defence);
+        if (player.getActiveWarrior() == null
+                || enemy.getEnemyWarrior() == null) {
 
-    double finalDamage =
-            rawDamage - defence;
-
-    /*
-     * Evita daño menor a 1
-     */
-    finalDamage =
-            Math.max(finalDamage, 1);
-
-    ConsoleLog.Log(
-            "Daño final: "
-                    + finalDamage);
-
-    return finalDamage;
-}
-
-    public boolean isPlayerAlive() {
-        return player.isAlive();
-    }
-
-    public PlayerController getPlayer(){
-        return this.player;
-    }
-
-    public EnemyBot getEnemy(){
-        return this.enemy;
-    }
-
-    public boolean isEnemyAlive() {
-        return enemy.isAlive();
-    }
-
-    public boolean isBattleOver() {
-        return !player.isAlive() || !enemy.isAlive();
-    }
-
-    /**
-     * Estado del combate.
-     */
-    public Boolean getBattleStatus() {
-        ConsoleLog.Log("ESTADO DEL COMBATE");
-        Warrior pw = player.getActiveWarrior();
-        Warrior ew = enemy.getEnemyWarrior();
-
-        if (pw == null || ew == null) {
-            ConsoleLog.Log("ESTADO DE LA BATALLA: FINALIZADA");
+            ConsoleLog.Log(
+                    "COMBATE FINALIZADO");
 
             return false;
         }
 
-        String pData = String.format("%-12s | HP: %5.1f",
-                pw.getName(), pw.getLife(), pw.getAttack());
-
-
-        String eData = String.format("%-12s | HP: %5.1f",
-                ew.getName(), ew.getLife(), ew.getAttack());
-        
-        ConsoleLog.Log("ALIADO: " + pData);
-        ConsoleLog.Log("ENEMIGO: " + eData);
         return true;
     }
 
     /**
-     * Resultado final.
+     * Calcula el daño final.
+     * 
+     * Usa defensa plana:
+     * daño final = ataque - defensa
+     */
+    private double calculateDamage(
+            double rawDamage,
+            double defence) {
+
+        ConsoleLog.Log(
+                "ATK: "
+                        + rawDamage
+                        + " | DEF: "
+                        + defence);
+
+        double finalDamage =
+                rawDamage - defence;
+
+        // Daño mínimo garantizado
+        finalDamage =
+                Math.max(finalDamage, 1);
+
+        ConsoleLog.Log(
+                "Daño final: "
+                        + finalDamage);
+
+        return finalDamage;
+    }
+
+    /**
+     * Muestra estado actual del combate.
+     */
+    public boolean getBattleStatus() {
+
+        ConsoleLog.Log(
+                "===== ESTADO DEL COMBATE =====");
+
+        Warrior playerWarrior =
+                player.getActiveWarrior();
+
+        Warrior enemyWarrior =
+                enemy.getEnemyWarrior();
+
+        if (playerWarrior == null
+                || enemyWarrior == null) {
+
+            ConsoleLog.Log(
+                    "BATALLA FINALIZADA");
+
+            return false;
+        }
+
+        String allyData =
+                String.format(
+                        "%s | HP: %.1f | ATK: %.1f | DEF: %.1f",
+                        playerWarrior.getName(),
+                        playerWarrior.getHealth(),
+                        playerWarrior.getAttack(),
+                        playerWarrior.getDefence());
+
+        String enemyData =
+                String.format(
+                        "%s | HP: %.1f | ATK: %.1f | DEF: %.1f",
+                        enemyWarrior.getName(),
+                        enemyWarrior.getHealth(),
+                        enemyWarrior.getAttack(),
+                        enemyWarrior.getDefence());
+
+        ConsoleLog.Log(
+                "ALIADO  -> "
+                        + allyData);
+
+        ConsoleLog.Log(
+                "ENEMIGO -> "
+                        + enemyData);
+
+        return true;
+    }
+
+    /**
+     * Muestra resultado final.
      */
     public void getResult() {
-        ConsoleLog.Log("ESTADO DEL JUEGO");
+
+        ConsoleLog.Log(
+                "===== RESULTADO =====");
+
         if (!enemy.isAlive()) {
-            ConsoleLog.Log("VICTORIA, ENEMIGOS DERROTADOS");
+
+            ConsoleLog.Log(
+                    "VICTORIA: enemigos derrotados.");
         }
 
         if (!player.isAlive()) {
-            ConsoleLog.Log("DERROTA, ALIADOS VENCIDOS.");
-        }
 
+            ConsoleLog.Log(
+                    "DERROTA: equipo aliado eliminado.");
+        }
+    }
+
+    /**
+     * Indica si el jugador sigue vivo.
+     */
+    public boolean isPlayerAlive() {
+        return player.isAlive();
+    }
+
+    /**
+     * Indica si el enemigo sigue vivo.
+     */
+    public boolean isEnemyAlive() {
+        return enemy.isAlive();
+    }
+
+    /**
+     * Indica si la batalla terminó.
+     */
+    public boolean isBattleOver() {
+
+        return !player.isAlive()
+                || !enemy.isAlive();
+    }
+
+    /**
+     * Retorna el controlador del jugador.
+     */
+    public PlayerController getPlayer() {
+        return player;
+    }
+
+    /**
+     * Retorna el bot enemigo.
+     */
+    public EnemyBot getEnemy() {
+        return enemy;
     }
 }

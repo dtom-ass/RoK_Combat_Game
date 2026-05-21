@@ -1,100 +1,150 @@
 package model;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
- * Clase base abstracta para todos los guerreros.
+ * Clase base para todos los guerreros del juego.
+ * 
  * Define atributos y comportamiento común.
  */
 public abstract class Warrior {
+
+    /*
+     * Datos principales
+     */
+
     private String name;
-    private double lifePoints;
+
+    private double health;
+
     private double attack;
+
     private double defence;
+
+    /*
+     * Información adicional
+     */
+
     private String weapon;
-    private String origin;
+
     private String warriorType;
-    private static final Set<String> USED_NAMES = new HashSet<>();
+
+    private String origin;
 
     /**
      * Constructor principal.
-     * Inicializa atributos básicos del guerrero.
      */
-    public Warrior(String name, double lifePoints, double attack, double defence, String weapon) {
-        // Validamos nombres disponibles.
-        if (USED_NAMES.contains(name)) {
-            throw new IllegalArgumentException("Nombre ya usado: " + name);
-        }
+    public Warrior(
+            String name,
+            double health,
+            double attack,
+            double defence,
+            String weapon) {
 
-        USED_NAMES.add(name);
+        validateName(name);
 
         this.name = name;
-        this.lifePoints = lifePoints;
+
+        this.health = health;
+
         this.attack = attack;
+
         this.defence = defence;
+
         this.weapon = weapon;
     }
 
     /**
-     * Modifica la vida del guerrero.
-     * Evita que la vida sea negativa.
+     * Valida nombre.
      */
-    public void updateLife(double amount) {
-        this.lifePoints = Math.max(0, this.lifePoints + amount);
-    }
+    private void validateName(String name) {
 
-    /**
-     * Ajusta el ataque.
-     * No valida límites.
-     */
-    protected void updateAttack(double amount) {
-        this.attack += amount;
-    }
+        if (name == null || name.isBlank()) {
 
-    /**
-     * Ajusta la defensa.
-     * No valida límites.
-     */
-    protected void updateDefence(double amount) {
-        this.defence += amount;
-    }
-
-    /**
-     * Define el origen del guerrero.
-     */
-    protected void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    /**
-     * Define el tipo de guerrero.
-     */
-    protected void setWarriorType(String type) {
-        this.warriorType = type;
-    }
-
-
-    /** 
-     * Aplica bonificación según tipo.
-     * Usa valores numéricos que no son autoexplicativos.
-     */
-    // ## VALIDAR PARA ESTABILIZAR COMBATE ##
-    protected void setSpecial(int special) {
-        switch (special) {
-            case 1 -> this.attack *= 1.1;
-            case 2 -> this.defence *= 1.1;
-            case 3 -> this.lifePoints += 10;
+            throw new IllegalArgumentException(
+                    "El nombre no puede estar vacío.");
         }
     }
 
     /**
-     * Devuelve la vida.
-     * Redundante porque ya se controla en updateLife.
+     * Modifica vida.
      */
-    public double getLife() {
-        return Math.max(0, lifePoints);
+    public void updateHealth(double amount) {
+
+        health = Math.max(
+                0,
+                health + amount);
+    }
+
+    /**
+     * Modifica ataque.
+     */
+    protected void updateAttack(double amount) {
+
+        attack += amount;
+    }
+
+    /**
+     * Modifica defensa.
+     */
+    protected void updateDefence(double amount) {
+
+        defence += amount;
+    }
+
+    /**
+     * Aplica bonus especial.
+     * 
+     * 1 = ataque
+     * 2 = defensa
+     * 3 = vida
+     */
+    protected void applySpecialBonus(int specialType) {
+
+        switch (specialType) {
+
+            case 1 -> attack *= 1.1;
+
+            case 2 -> defence *= 1.1;
+
+            case 3 -> health += 10;
+        }
+    }
+
+    /**
+     * Define tipo.
+     */
+    protected void setWarriorType(String warriorType) {
+
+        this.warriorType = warriorType;
+    }
+
+    /**
+     * Define cultura/origen.
+     */
+    protected void setOrigin(String origin) {
+
+        this.origin = origin;
+    }
+
+    /**
+     * Cambia arma.
+     */
+    public void setWeapon(String weapon) {
+
+        this.weapon = weapon;
+    }
+
+    /*
+     * Getters
+     */
+
+    public String getName() {
+        return name;
+    }
+
+    public double getHealth() {
+        return health;
     }
 
     public double getAttack() {
@@ -105,36 +155,33 @@ public abstract class Warrior {
         return defence;
     }
 
-    public String getName() {
-        return name;
+    public String getWeapon() {
+        return weapon;
     }
 
     public String getWarriorType() {
         return warriorType;
     }
 
-    /**
-     * Define el arma actual.
-     * Uso de String limita escalabilidad.
-     */
-    public void setWeapon(String weapon) {
-        this.weapon = weapon;
+    public String getOrigin() {
+        return origin;
     }
 
     /**
-     * Retorna el arma equipada.
-     */
-    public String getWeapon() {
-        return weapon;
-    }
-
-    /**
-     * Método abstracto que obliga a definir armas disponibles.
+     * Lista de armas disponibles.
      */
     public abstract List<String> getArmsList();
 
-    
-    public int hashCode() {
-        return name.hashCode();
+    /**
+     * Representación básica.
+     */
+    @Override
+    public String toString() {
+
+        return String.format(
+                "%s [%s] HP: %.1f",
+                name,
+                warriorType,
+                health);
     }
 }

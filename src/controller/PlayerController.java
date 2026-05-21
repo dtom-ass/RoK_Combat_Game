@@ -6,95 +6,157 @@ import java.util.Random;
 import model.Culture;
 import model.Warrior;
 import view.console.ConsoleLog;
-import java.util.random.*;
-    
+
 /**
- * Controla acciones del jugador durante la batalla.
+ * Controla al jugador durante la batalla.
  */
 public class PlayerController {
-    Random random = new Random();
-    private static final double SPECIAL_MULTIPLIER = 1.5;
 
-    private Culture playerCulture;
+    // Generador aleatorio
+    private final Random random;
+
+    // Cultura del jugador
+    private final Culture playerCulture;
+
+    // Guerrero activo
     private Warrior activeWarrior;
+
+    // Índice actual
     private int activeWarriorIndex;
+
+    // Estado del equipo
     private boolean alive;
 
     /**
-     * Inicializa el controlador del jugador.
+     * Constructor principal.
      */
     public PlayerController(Culture culture) {
 
-        playerCulture = culture;
-        activeWarriorIndex = 0;
-        alive = true;
+        this.random = new Random();
 
-        List<Warrior> team = culture.getWarriorList();
+        this.playerCulture = culture;
 
-        // Validación de equipo vacío
-        if (!team.isEmpty()) {
-            activeWarrior = team.get(0);
-        } else {
-            activeWarrior = null;
-            alive = false;
-        }
+        initializeTeam();
     }
 
     /**
-     * Cambia guerrero activo.
+     * Inicializa el equipo.
+     */
+    private void initializeTeam() {
+
+        List<Warrior> team =
+                playerCulture.getWarriorList();
+
+        if (team.isEmpty()) {
+
+            alive = false;
+
+            activeWarrior = null;
+
+            activeWarriorIndex = -1;
+
+            return;
+        }
+
+        alive = true;
+
+        activeWarriorIndex = 0;
+
+        activeWarrior = team.get(0);
+
+        ConsoleLog.Log(
+                "Jugador inicia con: "
+                        + activeWarrior.getName());
+    }
+
+    /**
+     * Cambia el guerrero activo.
      */
     public void switchWarrior(int chosenIndex) {
 
-        List<Warrior> team = playerCulture.getWarriorList();
+        List<Warrior> team =
+                playerCulture.getWarriorList();
 
-        if (chosenIndex == activeWarriorIndex)
+        // Índice inválido
+        if (chosenIndex < 0
+                || chosenIndex >= team.size()) {
+
             return;
-        if (chosenIndex < 0 || chosenIndex >= team.size())
+        }
+
+        // Evita cambiar al mismo
+        if (chosenIndex == activeWarriorIndex) {
+
             return;
+        }
 
         activeWarriorIndex = chosenIndex;
+
         activeWarrior = team.get(chosenIndex);
-        ConsoleLog.Log("Jugador cambia al guerrero: " + activeWarrior.getName());
+
+        ConsoleLog.Log(
+                "Jugador cambia a: "
+                        + activeWarrior.getName());
     }
 
     /**
-     * Ataque básico.
+     * Ejecuta ataque básico.
+     * 
+     * Daño:
+     * 2 a 5
      */
-    
     public double basicAttack() {
-        ConsoleLog.Log("Realizando ataque Basico...");
+
         return 2 + random.nextInt(4);
     }
 
     /**
-     * Ataque especial.
+     * Ejecuta ataque especial.
+     * 
+     * 35% crítico:
+     * daño entre 5 y 10.
+     * 
+     * Si falla:
+     * ataque básico.
      */
     public double specialAttack() {
 
-    /*
-     * 35% probabilidad crítico
-     */
-    if (random.nextDouble() <= 0.35) {
+        if (random.nextDouble() <= 0.35) {
 
-        return 5 + random.nextInt(6);
+            ConsoleLog.Log(
+                    "¡Golpe crítico aliado!");
+
+            return 5 + random.nextInt(6);
+        }
+
+        return basicAttack();
     }
 
-    /*
-     * Si falla:
-     * daño básico
-     */
-    return basicAttack();
-}
-
     /**
-     * Aplica daño recibido.
+     * Aplica daño al guerrero activo.
+     * 
+     * @return true si murió
      */
     public boolean receiveAttack(double damage) {
-        activeWarrior.updateLife(-damage);
-        ConsoleLog.Log("El guerrero aliado " + activeWarrior.getName() + " recibio " + damage + " puntos de daño.");
-        if (activeWarrior.getLife() <= 0) {
+
+        if (activeWarrior == null) {
+
+            return false;
+        }
+
+        activeWarrior.updateHealth(-damage);
+
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " recibe "
+                        + damage
+                        + " puntos de daño.");
+
+        if (activeWarrior.getHealth() <= 0) {
+
             removeDeadWarrior();
-            return true; // murió
+
+            return true;
         }
 
         return false;
@@ -105,38 +167,66 @@ public class PlayerController {
      */
     private void removeDeadWarrior() {
 
-        ConsoleLog.Log("Guerrero aliado " + activeWarrior.getName() + " ELIMINADO");
-        // FIX: usar método interno de Culture
-        playerCulture.removeWarrior(activeWarriorIndex);
+        ConsoleLog.Log(
+                activeWarrior.getName()
+                        + " ha sido eliminado.");
 
-        List<Warrior> team = playerCulture.getWarriorList();
+        playerCulture.removeWarrior(
+                activeWarriorIndex);
 
+        List<Warrior> team =
+                playerCulture.getWarriorList();
+
+        // Equipo derrotado
         if (team.isEmpty()) {
+
             alive = false;
+
             activeWarrior = null;
-            ConsoleLog.Log("EQUIPO ALIADO DERROTADO");
+
+            activeWarriorIndex = -1;
+
+            ConsoleLog.Log(
+                    "Equipo aliado derrotado.");
+
             return;
         }
 
+        // Nuevo guerrero activo
         activeWarriorIndex = 0;
+
         activeWarrior = team.get(0);
+
+        ConsoleLog.Log(
+                "Nuevo aliado activo: "
+                        + activeWarrior.getName());
     }
 
+    /**
+     * Retorna guerrero activo.
+     */
     public Warrior getActiveWarrior() {
         return activeWarrior;
     }
 
+    /**
+     * Retorna equipo del jugador.
+     */
     public List<Warrior> getWarriorTeam() {
+
         return playerCulture.getWarriorList();
     }
 
+    /**
+     * Retorna cultura del jugador.
+     */
     public Culture getPlayerCulture() {
         return playerCulture;
     }
-    public Culture getEnemyCulture() {
-        return playerCulture;
-    }
 
+    /**
+     * Indica si el jugador sigue vivo.
+     */
     public boolean isAlive() {
         return alive;
     }

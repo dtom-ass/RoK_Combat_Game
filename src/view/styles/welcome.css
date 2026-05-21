@@ -1,65 +1,102 @@
-.root {
-    -fx-background-color:
-        linear-gradient(to bottom,
-        #1b1b1b,
-        #101010);
+/*
+|--------------------------------------------------------------------------
+| ROOT
+|--------------------------------------------------------------------------
+*/
 
-    -fx-padding: 40;
+.welcome-root {
+
+    /*
+     * Imagen de fondo
+     */
+
+    -fx-background-image:
+        url("./imgs/welcome_wallpaper.jpeg");
+
+    /*
+     * Ajustes imagen
+     */
+
+    -fx-background-size: cover;
+
+    -fx-background-position: center center;
+
+    -fx-background-repeat: no-repeat;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| TITULO
+|--------------------------------------------------------------------------
+*/
 
 .title-label {
+
     -fx-font-size: 42px;
+
     -fx-font-weight: bold;
 
-    -fx-text-fill: #f5d76e;
+    -fx-text-fill: white;
 
-    -fx-padding: 20 0 40 0;
+    -fx-effect:
+        dropshadow(
+            gaussian,
+            rgba(0,0,0,0.8),
+            10,
+            0.5,
+            0,
+            2);
 }
 
-.subtitle-label {
-    -fx-font-size: 16px;
 
-    -fx-text-fill: #cfcfcf;
-}
-
-.button-container {
-    -fx-alignment: center;
-    -fx-spacing: 25;
-}
+/*
+|--------------------------------------------------------------------------
+| BOTONES
+|--------------------------------------------------------------------------
+*/
 
 .button {
+
     -fx-background-color:
-        linear-gradient(to bottom,
-        #444,
-        #222);
+        linear-gradient(
+            to bottom,
+            #4b4b4b,
+            #2f2f2f);
 
     -fx-text-fill: white;
 
     -fx-font-size: 16px;
+
     -fx-font-weight: bold;
 
-    -fx-padding: 12 30 12 30;
+    -fx-padding: 12 28 12 28;
 
     -fx-background-radius: 12;
+
     -fx-border-radius: 12;
 
-    -fx-border-color: #666;
-    -fx-border-width: 1.5;
+    -fx-border-color: #666666;
 
     -fx-cursor: hand;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| HOVER
+|--------------------------------------------------------------------------
+*/
+
 .button:hover {
+
     -fx-background-color:
-        linear-gradient(to bottom,
-        #666,
-        #333);
+        linear-gradient(
+            to bottom,
+            #616161,
+            #424242);
 
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
+    -fx-scale-x: 1.04;
 
-.button:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
+    -fx-scale-y: 1.04;
 }

@@ -235,7 +235,7 @@ public class BattleScene {
          * ESCENA
          * =========================================
          */
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 800, 600);
 
         String css = BattleScene.class
                 .getResource("/view/styles/Battle.css")
