@@ -102,15 +102,38 @@ public class BattleController {
     /**
      * Cálculo de daño.
      */
-    private double calculateDamage(double attack, double defence) {
-        ConsoleLog.Log("Operando ataque " + attack + " Y defensa " + defence);
-        // Normaliza defensa para evitar valores fuera de rango
-        double def = Math.max(0, Math.min(defence, 1));
-        double damageGen = Math.max((attack * 30) * (1 - def), 1.0);
-        ConsoleLog.Log("Calcalulo de defensa " + def + " Genera un total de " + damageGen + " puntos de daño."); // ## AJUSTAR ##
-        
-        return damageGen;
-    }
+    /**
+ * Calcula el daño final considerando defensa.
+ * Usa reducción progresiva para evitar defensas rotas.
+ */
+/**
+ * Calcula daño final aplicando defensa plana.
+ */
+private double calculateDamage(
+        double rawDamage,
+        double defence) {
+
+    ConsoleLog.Log(
+            "ATK: "
+                    + rawDamage
+                    + " DEF: "
+                    + defence);
+
+    double finalDamage =
+            rawDamage - defence;
+
+    /*
+     * Evita daño menor a 1
+     */
+    finalDamage =
+            Math.max(finalDamage, 1);
+
+    ConsoleLog.Log(
+            "Daño final: "
+                    + finalDamage);
+
+    return finalDamage;
+}
 
     public boolean isPlayerAlive() {
         return player.isAlive();

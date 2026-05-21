@@ -151,16 +151,30 @@ public class EnemyBot {
     /**
      * Ataque básico.
      */
-    private double basicAttack() {
-        return enemyWarrior.getAttack();
+    public double basicAttack() {
+        ConsoleLog.Log("Realizando ataque Basico...");
+        return 2 + random.nextInt(4);
     }
 
     /**
      * Ataque especial.
      */
-    private double specialAttack() {
-        return enemyWarrior.getAttack() * SPECIAL_MULTIPLIER;
+    public double specialAttack() {
+
+    /*
+     * 35% probabilidad crítico
+     */
+    if (random.nextDouble() <= 0.35) {
+
+        return 5 + random.nextInt(6);
     }
+
+    /*
+     * Si falla:
+     * daño básico
+     */
+    return basicAttack();
+}
 
     /**
      * Aplica daño recibido.

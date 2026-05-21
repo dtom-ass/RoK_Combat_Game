@@ -1,15 +1,18 @@
 package controller;
 
 import java.util.List;
+import java.util.Random;
+
 import model.Culture;
 import model.Warrior;
 import view.console.ConsoleLog;
-
+import java.util.random.*;
+    
 /**
  * Controla acciones del jugador durante la batalla.
  */
 public class PlayerController {
-
+    Random random = new Random();
     private static final double SPECIAL_MULTIPLIER = 1.5;
 
     private Culture playerCulture;
@@ -57,18 +60,31 @@ public class PlayerController {
     /**
      * Ataque básico.
      */
+    
     public double basicAttack() {
         ConsoleLog.Log("Realizando ataque Basico...");
-        return activeWarrior.getAttack();
+        return 2 + random.nextInt(4);
     }
 
     /**
      * Ataque especial.
      */
     public double specialAttack() {
-        ConsoleLog.Log("Realizando ataque Especial...");
-        return activeWarrior.getAttack() * SPECIAL_MULTIPLIER;
+
+    /*
+     * 35% probabilidad crítico
+     */
+    if (random.nextDouble() <= 0.35) {
+
+        return 5 + random.nextInt(6);
     }
+
+    /*
+     * Si falla:
+     * daño básico
+     */
+    return basicAttack();
+}
 
     /**
      * Aplica daño recibido.
