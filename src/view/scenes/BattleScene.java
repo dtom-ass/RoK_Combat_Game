@@ -238,7 +238,7 @@ public class BattleScene {
         Scene scene = new Scene(root, 1000, 700);
 
         String css = BattleScene.class
-                .getResource("/view/scenes/styles/Battle.css")
+                .getResource("/view/styles/Battle.css")
                 .toExternalForm();
 
         scene.getStylesheets().add(css);

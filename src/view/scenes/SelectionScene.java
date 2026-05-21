@@ -49,7 +49,7 @@ public class SelectionScene {
         Scene scene = new Scene(root, 800, 600);
 
         String css = SelectionScene.class
-                .getResource("/view/scenes/styles/Selection.css")
+                .getResource("/view/styles/Selection.css")
                 .toExternalForm();
 
         scene.getStylesheets().add(css);

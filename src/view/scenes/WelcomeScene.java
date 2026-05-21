@@ -46,7 +46,7 @@ public class WelcomeScene {
         Scene scene = new Scene(root, 800, 600);
 
         String css = WelcomeScene.class
-                .getResource("/view/scenes/styles/welcome.css")
+                .getResource("/view/styles/welcome.css")
                 .toExternalForm();
 
         scene.getStylesheets().add(css);

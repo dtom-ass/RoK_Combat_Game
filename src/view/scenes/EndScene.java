@@ -65,7 +65,7 @@ public class EndScene {
                 new Scene(root, 800, 600);
 
         String css = EndScene.class
-                .getResource("/view/scenes/styles/End.css")
+                .getResource("/view/styles/End.css")
                 .toExternalForm();
 
         scene.getStylesheets().add(css);
